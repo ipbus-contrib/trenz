@@ -23,10 +23,7 @@
 #
 #-------------------------------------------------------------------------------
 
-
-src enclustra_ax3_pm3_macprom_infra.vhd
-include -c components/neo430_wrapper neo430_wrapper.dep
-src -c ipbus_firmware:components/ipbus_util clocks/clocks_7s_extphy_se.vhd ipbus_clock_div.vhd led_stretcher.vhd
-include -c ipbus_firmware:components/ipbus_util ipbus_ctrl.dep
-include -c ipbus_firmware:components/ipbus_eth artix_rgmii.dep
-src -c ipbus_firmware:components/ipbus_core ipbus_fabric_sel.vhd ipbus_package.vhd
+@device_family = "artix7"
+@device_name = "xc7a35t"
+@device_package = "csg324"
+@device_speed = "-1"
