@@ -29,8 +29,9 @@ src -c neo430: --cd ../../../../rtl/core   neo430_freq_gen.vhd
 # To rebuild, use gcc-msp430 and the s/ware in the s/ware sub directory
 src neo430_application_image.vhd
 
-# Copy of I2C bus master from IPBus repo. but with no tri-state buffers inside.
-src -c components/opencores_i2c ipbus_i2c_master_noz.vhd
+# Pull in I2C bus master from IPBus repo.
+include -c ipbus-firmware:components/opencores_i2c opencores_i2c.dep
+# src -c components/opencores_i2c ipbus_i2c_master_noz.vhd
 
 src wb_ip_mac_output.vhd
 

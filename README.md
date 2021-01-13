@@ -40,7 +40,7 @@ These instructions assume that you have your Xilinx Vivado licensing already set
 	popd
 
 	# Create IPBB project....
-	# This example assumes that there is an 
+	# This example assumes that there is an EEPROM connected to uid_scl , uid_sda lines
 	ipbb proj create vivado top_a35-macprom-example enclustra:projects/example top_enclustra_ax3_pm3_a35_macprom.dep
 	cd proj/top_a35-macprom-example
 	ipbb vivado project
@@ -49,6 +49,12 @@ These instructions assume that you have your Xilinx Vivado licensing already set
 	ipbb vivago memcfg
 	ipbb vivado package
 	deactivate
+
+### Which Components Do I Use in My Design ? ###
+
+This repository contains a version of the IPBus infrastructure block that reads MAC and IP address from PROM : [enclustra_ax3_pm3_macprom_infra.vhd](boards/enclustra_ax3_pm3/synth/firmware/hdl/enclustra_ax3_pm3_macprom_infra.vhd) . The ports are described in a [README.md](boards/enclustra_ax3_pm3/synth/firmware/hdl/README.md)
+
+Inside [enclustra_ax3_pm3_macprom_infra.vhd](boards/enclustra_ax3_pm3/synth/firmware/hdl/enclustra_ax3_pm3_macprom_infra.vhd) there is a wrapper around the NEO430 soft core microprocessor, do
 
 ### Who do I talk to? ###
 

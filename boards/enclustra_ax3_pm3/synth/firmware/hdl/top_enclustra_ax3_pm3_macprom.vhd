@@ -66,7 +66,10 @@ architecture rtl of top is
 	signal ipb_in: ipb_rbus;
 	signal inf_leds: std_logic_vector(1 downto 0);
 	signal neo430_scl_o , neo430_sda_o : std_logic;
-
+    
+    signal uid_sda_o , uid_scl_o : std_logic := '1'; -- In a full design these would be connected to payload 
+                                                     -- and provide access to the I2C bus from IPBus
+    
 begin
 
 -- Infrastructure
@@ -76,7 +79,7 @@ begin
 	uid_scl <= '0'  when ((uid_scl_o= '0') or (neo430_scl_o= '0')) else 'Z';
 
 
-	infra: entity work.enclustra_ax3_pm3_infra
+	infra: entity work.enclustra_ax3_pm3_macprom_infra
 		port map(
 			osc_clk => osc_clk,
 			clk_ipb_o => clk_ipb,
