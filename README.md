@@ -32,10 +32,16 @@ These instructions assume that you have your Xilinx Vivado licensing already set
 	ipbb add git git@github.com:ipbus-contrib/enclustra.git 
 	ipbb add git https://github.com/stnolting/neo430.git -b 0x0408
 	
-	# These next steps compile the software running on the neo430. Not needed for the example design unless you have changed the source *.c code.
+	# These next steps compile the software running on the neo430. 
+        # Don't need to recompile if using a FMC with E24AA025E4 at I2C address 0x53
+	# (or you have changed the source *.c code.)
+	# To build example that just uses the CryptoEEPROM on AX3 
+	# you will need to rebuild since the I2C address of EEPROM is not the same as on FMC
 	# You will need msp430-gcc installed for this.
-	pushd src/enclustra/components/neo430_wrapper/sw/neo430_ipbus_address_terminal/
-	make clean_all
+	pushd src/enclustra/components/neo430_wrapper/software/neo430_ipbus_address_terminal/
+	make clean_all CFLAGS="-DFORCE_RARP=1 -DPROMUIDADDR=0x10"
+	# The CFLAGS above build for MAC addr. from CryptoEEPROM on AX3 
+	# make clean_all
 	make install
 	popd
 

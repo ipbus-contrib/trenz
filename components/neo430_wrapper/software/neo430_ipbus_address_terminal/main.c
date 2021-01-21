@@ -68,7 +68,7 @@ int setMacIP(void){
   neo430_wishbone_writeIPAddr(ipAddr);
 
   // if the IP address is set to 255.255.255.255 or 0.0.0.0 then use RARP
-  useRARP = ((ipAddr == 0xFFFFFFFF) || (ipAddr == 0)) ? true : false;
+  useRARP = ((ipAddr == 0xFFFFFFFF) || (ipAddr == 0) || FORCE_RARP==1 ) ? true : false;
   neo430_wishbone_writeRarpFlag(useRARP);
 
   // then read the value to write to general purpose output (used for endpoint addr in DUNE)

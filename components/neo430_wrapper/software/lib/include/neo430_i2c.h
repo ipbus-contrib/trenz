@@ -90,7 +90,13 @@ void print_GPO( uint16_t gpo);
 #define PROMMEMORY_GPO_ADDR 0x10
 
 // UID location in PROM memory ...
+// 0xFA is UID location in E24AA025E
+// 0x10 is MAC address location in "CryptoEEPROM" on AX3
+#ifndef PROMUIDADDR
 #define PROMUIDADDR 0xFA
+//#define PROMUIDADDR 0x10
+#endif
+
 
 uint8_t buffer[MAX_N];
 char command[MAX_CMD_LENGTH];

@@ -130,8 +130,9 @@ crt0.elf: $(NEO430_COM_PATH)/crt0.asm
 	@$(AS) -mY -mcpu=msp430 $< -o $@
 
 # Compile app sources
+# CFLAGS can be passed as argument to make ( e.g. CFLAGS=-DFORCE_RARP=1 )
 $(OBJ): %.o : %.c crt0.elf
-	@$(CC) -c $(CC_OPTS) $(EFFORT) -I $(NEO430_INC_PATH) $(APP_INC) $< -o $@
+	@$(CC) -c $(CC_OPTS) $(CFLAGS) $(EFFORT) -I $(NEO430_INC_PATH) $(APP_INC) $< -o $@
 
 # Link object files
 main.elf: $(OBJ)

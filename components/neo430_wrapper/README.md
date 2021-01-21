@@ -40,8 +40,8 @@ ENTITY ipbus_neo430_wrapper IS
 If the software running on the soft core needs to be modified then
 
 * Install the [GCC compiler for MSP430](https://www.ti.com/tool/MSP430-GCC-OPENSOURCE) 
-* edit the code under `components/neo430_wrapper/sw`
-* change directory to `components/neo430_wrapper/sw`
+* edit the code under `components/neo430_wrapper/software`
+* change directory to `components/neo430_wrapper/software`
 * execute the following commands: 
 ```
 make clean

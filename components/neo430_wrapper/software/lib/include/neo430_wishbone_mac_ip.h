@@ -6,6 +6,10 @@
 
 #include <stdbool.h>
 
+#ifndef FORCE_RARP
+#define FORCE_RARP 0
+#endif
+
 #ifndef neo430_wishbone_mac_ip_h
 #define neo430_wishbone_mac_ip_h
 
@@ -16,6 +20,7 @@
 #define ADDR_MAC_ADDR_HIGH 0x0120
 #define ADDR_IPBUS_RESET   0x0130
 #define ADDR_RARP_FLAG	   0x0140
+
 
 // prototypes blocking functions for write/read of IP address
 uint32_t neo430_wishbone_readIPAddr(void);
