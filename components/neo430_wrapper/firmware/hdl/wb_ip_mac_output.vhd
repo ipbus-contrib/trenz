@@ -48,6 +48,9 @@ architecture Behavioral of wb_ip_mac_output is
     signal s_use_rarp: std_logic;
     signal s_ipbus_rst : std_logic := '1' ;    
     signal s_ack : std_logic := '0';
+
+    attribute mark_debug: string;
+    attribute mark_debug of s_use_rarp : signal is "true" ;
     
 begin
 
@@ -102,5 +105,6 @@ begin
     mac_addr_o  <= s_mac_addr;
     ip_addr_o   <= s_ip_addr;
     ipbus_rst_o <= s_ipbus_rst;
+    use_rarp_o <= s_use_rarp;
 
 end Behavioral;

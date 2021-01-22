@@ -38,6 +38,7 @@ use work.ipbus.all;
 entity enclustra_ax3_pm3_macprom_infra is
 	generic (
           CLK_AUX_FREQ : real := 40.0 ; -- Default: 40 MHz clock - LHC
+          FORCE_RARP : boolean := False; -- Set True in order to force use of RARP, regardless of PROM
           UID_I2C_ADDR : std_logic_vector(7 downto 0) := x"53" -- Address on I2C bus of E24AA025E
 		);
 	port(
@@ -79,8 +80,13 @@ architecture rtl of enclustra_ax3_pm3_macprom_infra is
 	signal mac_addr: std_logic_vector(47 downto 0); -- MAC address
 	signal ip_addr:  std_logic_vector(31 downto 0); -- IP address
 	signal internal_nuke, neo430_nuke: std_logic;
-    signal RARP_select : std_logic; -- set high to use RARP
+    signal neo430_RARP_select , RARP_select : std_logic; -- set high to use RARP
     
+    attribute mark_debug: string;
+    attribute mark_debug of RARP_select : signal is "true";
+    attribute mark_debug of neo430_RARP_select : signal is "true";
+    attribute mark_debug of rst_ipb_ctrl : signal is "true";
+    attribute mark_debug of internal_nuke : signal is "true";
 begin
 
 --	DCM clock generation for internal bus, ethernet
@@ -142,7 +148,7 @@ begin
 	    	scl_i      => uid_scl_i,                       -- the actual state of the line back to NEO
     		sda_o      => uid_sda_o,                        -- I2C data from NEO
     		sda_i      => uid_sda_i,
-    		use_rarp_o => RARP_select,
+    		use_rarp_o => neo430_RARP_select,
     		gp_o       => gp_o,
     		ip_addr_o  => ip_addr,
     		mac_addr_o => mac_addr,
@@ -202,4 +208,6 @@ begin
 			pkt => pkt
 		);
 
+    RARP_select <= '1' when (neo430_RARP_select='1' or FORCE_RARP) else '0';
+    
 end rtl;
