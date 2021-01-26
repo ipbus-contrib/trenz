@@ -78,9 +78,11 @@ APP_SRC += $(wildcard $(NEO430_SRC_PATH)/*.c)
 APP_BIN = main.bin
 APP_ASM = main.s
 
+APPLICATION_IMAGE_FNAME = neo430_application_image_24AA025E.vhd
+
 compile: $(APP_ASM) $(APP_BIN)
-install: $(APP_ASM) neo430_application_image.vhd
-all:     $(APP_ASM) $(APP_BIN) neo430_application_image.vhd
+install: $(APP_ASM) $(APPLICATION_IMAGE_FNAME)
+all:     $(APP_ASM) $(APP_BIN) $(APPLICATION_IMAGE_FNAME)
 
 # define all object files
 OBJ = $(APP_SRC:.c=.o)
@@ -158,11 +160,11 @@ $(APP_BIN): image.dat $(IMAGE_GEN)
 	@$(IMAGE_GEN) -app_bin $< $@
 
 # Generate NEO430 executable VHDL boot image
-neo430_application_image.vhd: image.dat $(IMAGE_GEN)
+$(APPLICATION_IMAGE_FNAME): image.dat $(IMAGE_GEN)
 	@$(IMAGE_GEN) -app_img $< $@
-	@echo Installing application image to $(NEO430_RTL_PATH)/neo430_application_image.vhd
-	@cp neo430_application_image.vhd $(NEO430_RTL_PATH)/.
-	@rm -f neo430_application_image.vhd
+	@echo Installing application image to $(NEO430_RTL_PATH)/$(APPLICATION_IMAGE_FNAME)
+	@cp $(APPLICATION_IMAGE_FNAME) $(NEO430_RTL_PATH)/.
+	@rm -f $(APPLICATION_IMAGE_FNAME)
 
 
 #-------------------------------------------------------------------------------

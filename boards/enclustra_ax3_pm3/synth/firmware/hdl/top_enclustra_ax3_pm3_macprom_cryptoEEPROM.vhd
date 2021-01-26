@@ -80,9 +80,9 @@ begin
 
 
 	infra: entity work.enclustra_ax3_pm3_macprom_infra
-	   generic map( UID_I2C_ADDR => x"53" ,-- location in I2C map of PROM holding MAC addr.
-	                                      -- 0x64 is the EEPROM on the pc053 FMC
-	                FORCE_RARP => False                      
+	   generic map( UID_I2C_ADDR => x"64", -- location in I2C map of PROM holding MAC addr.
+	                                      -- 0x64 is the EEPROM on the AX3
+	                FORCE_RARP => True
 	   )
 		port map(
 			osc_clk => osc_clk,

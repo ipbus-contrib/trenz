@@ -133,10 +133,12 @@ int main(void) {
       selection = 2;
     if (!strcmp(command, "id"))
       selection = 3;
+#if FORCE_RARP == 0
     if (!strcmp(command, "write"))
       selection = 4;
     if (!strcmp(command, "read"))
       selection = 5;
+#endif
     if (!strcmp(command, "writegpo"))
       selection = 6;
     if (!strcmp(command, "readgpo"))
@@ -173,6 +175,7 @@ int main(void) {
        print_MAC_address(uid);
         break;
 
+#if FORCE_RARP == 0
       case 4: // write to PROM
 	     write_Prom();
         break;
@@ -181,6 +184,7 @@ int main(void) {
 	     ipAddr = read_Prom();
 	     print_IP_address(ipAddr);
 	     break;
+#endif
 
       case 6: // write General Purpose Output value to PROM
         write_PromGPO();

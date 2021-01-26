@@ -1,13 +1,16 @@
 ## neo430_wrapper - uses neo430 soft core CPU to set MAC address ( and optionally IP ) address from contents of I2C PROM ##
 
-Assumes that there is a [Microchip 24AA025E](https://www.microchip.com/wwwproducts/en/24AA025) attached to I2C bus.
+Assumes that there is a PROM containing the MAC address attached to the I2C bus. This can either be:
 
-Address of `24AA025E` on I2C bus given by the `UID_I2C_ADDR` generic.
+* [Microchip 24AA025E](https://www.microchip.com/wwwproducts/en/24AA025), which can also store IP address (if not using RARP)
+* CrypoEEPROM on AX3 with memory map described in section 4.4 of [AX3 manual](https://download.enclustra.com/public_files/FPGA_Modules/Mars_AX3/Mars_AX3_User_Manual_V05.pdf)
 
-The MAC address is always read from the `24AA025E` unique ID area. This guarantees a unique ( and value ) 48-bit MAC address. 
+Address of the EEPROM on I2C bus given by the `UID_I2C_ADDR` generic.
+
+The MAC address is always read from the EEPROM  unique ID area. This guarantees a unique ( and value ) 48-bit MAC address. 
 The MAC address can be read from the PROM and displayed by typing a coomand over a serial terminal. 
 
-The IP address is read from the PROM and can be set by typing a command over a serial terminal. 
+If an `24AA025E` is used the IP address can also be stored in the the PROM and can be set by typing a command over a serial terminal. 
 
 Uses the [NEO430](https://github.com/stnolting/neo430/) soft core processor.
 
@@ -15,7 +18,8 @@ Uses the [NEO430](https://github.com/stnolting/neo430/) soft core processor.
 ENTITY ipbus_neo430_wrapper IS
   GENERIC( 
     CLOCK_SPEED : natural := 31250000; -- clock speed. Assumed IPBus freq. of 31.25MHz
-    UID_I2C_ADDR : std_logic_vector(7 downto 0) := x"53" -- Address on I2C bus of E24AA025E
+    UID_I2C_ADDR : std_logic_vector(7 downto 0) := x"53"; -- Address on I2C bus of E24AA025E
+    FORCE_RARP : boolean := False -- set True to force IPBus to use RARP
     );
   PORT( 
     clk_i      : IN     std_logic;                      -- global clock, rising edge.

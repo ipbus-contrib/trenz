@@ -39,10 +39,12 @@ These instructions assume that you have your Xilinx Vivado licensing already set
 	# you will need to rebuild since the I2C address of EEPROM is not the same as on FMC
 	# You will need msp430-gcc installed for this.
 	pushd src/enclustra/components/neo430_wrapper/software/neo430_ipbus_address_terminal/
-	make clean_all CFLAGS="-DFORCE_RARP=1 -DPROMUIDADDR=0x10"
-	# The CFLAGS above build for MAC addr. from CryptoEEPROM on AX3 
+	make clean_all 
+	make install CFLAGS="-DFORCE_RARP=1 -DPROMUIDADDR=0x10" APPLICATION_IMAGE_FNAME=neo430_application_image_crypoEEPROM.vhd
+	# The CFLAGS above build for MAC addr. from CryptoEEPROM on AX3. For default build (24AA025) use the following instead: 
 	# make clean_all
-	make install
+	# make install
+
 	popd
 
 	# Create IPBB project....
