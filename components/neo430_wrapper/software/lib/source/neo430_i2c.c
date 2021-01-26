@@ -67,7 +67,7 @@ void setup_i2c(void) {
 
   uint16_t prescale = I2C_PRESCALE;
 
-  neo430_uart_br_print("Setting up I2C core");
+  neo430_uart_br_print("Setting up I2C core\n");
 
   eepromAddress =  neo430_gpio_port_get() & 0xFF ;
   neo430_uart_br_print("I2C address E24AA025E EEPROM = ");

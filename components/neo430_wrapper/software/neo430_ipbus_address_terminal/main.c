@@ -62,10 +62,12 @@ int setMacIP(void){
   // and write to control lines
   neo430_wishbone_writeMACAddr(uid);
 
+#if FORCE_RARP == 0
   // then read IP address
   ipAddr = read_Prom();
   // and write to control lines
   neo430_wishbone_writeIPAddr(ipAddr);
+#endif
 
   // if the IP address is set to 255.255.255.255 or 0.0.0.0 then use RARP
   useRARP = ((ipAddr == 0xFFFFFFFF) || (ipAddr == 0) || FORCE_RARP==1 ) ? true : false;
@@ -95,7 +97,7 @@ int main(void) {
   //  USI_CT = (1<<USI_CT_EN);
  
   neo430_uart_br_print( "\n----------------------------------------\n"
-                          "- IPBus Address Control Terminal v0.14 -\n"
+                          "- IPBus Address Control Terminal v0.15 -\n"
                           "----------------------------------------\n\n");
 
   // check if WB unit was synthesized, exit if no WB is available
@@ -156,8 +158,10 @@ int main(void) {
                       " help     - show this text\n"
                       " enable   - enable I2C bridge on Enclustra\n"
                       " id       - Read Unique ID\n"
+#if FORCE_RARP == 0
                       " write    - write IP addr to PROM\n"
                       " read     - read IP addr from PROM\n"
+#endif
                       " writegpo - write GPO value to PROM\n"
                       " readgpo  - read GPO value from PROM\n"
                       " set      - read from E24AA025E48T UID and PROM area. Set MAC and IP address\n"
