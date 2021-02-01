@@ -26,14 +26,9 @@
 
 src -c boards/enclustra_ax3_pm3/synth top_enclustra_ax3_pm3_macprom.vhd
 
-# Need to define I2C pin locations...
 src     -c boards/enclustra_ax3_pm3/synth ../ucf/pc053d_ax3_pm3_i2c.tcl
 
 include -c boards/enclustra_ax3_pm3/synth a35-1.dep
-include -c boards/enclustra_ax3_pm3/synth enclustra_ax3_pm3_macprom.dep
-
-# On the Enclustra AX3 the FTDI UART lines and FMC pins share a bank so it is necessary to define the I/O standards
-# for the FTDI lines to match which FMC is connected. The line below defines FTDI_{RX,TX} to 2.5V needed for pc053d
+include -c boards/enclustra_ax3_pm3/synth enclustra_ax3_pm3_macprom_24AA025E.dep
 src     -c boards/enclustra_ax3_pm3/synth ../ucf/set_enclustra_ftdi_voltage_2v5.tcl
-
 include -c ipbus-firmware:components/ipbus_util ipbus_example.dep

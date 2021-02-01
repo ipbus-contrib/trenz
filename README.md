@@ -48,8 +48,13 @@ These instructions assume that you have your Xilinx Vivado licensing already set
 	popd
 
 	# Create IPBB project....
-	# This example assumes that there is an EEPROM connected to uid_scl , uid_sda lines
-	ipbb proj create vivado top_a35-macprom-example enclustra:projects/example top_enclustra_ax3_pm3_a35_macprom.dep
+
+	# This example assumes an AX3 with Artix 35 and an E24AA025E4 EEPROM at I2C address 0x53 (e.g. on pc053 FMC)  connected to uid_scl , uid_sda lines 
+	ipbb proj create vivado top_a35-macprom-example-24AA025E enclustra:projects/example top_enclustra_ax3_pm3_a35_macprom_24AA025E.dep
+
+	# This example uses the crypto EEPROM on the Enclustra AX3.
+	# ipbb proj create vivado top_a35-macprom-example-cryptoEEPROM enclustra:projects/example top_enclustra_ax3_pm3_a35_macprom_crypoEEPROM.dep
+
 	cd proj/top_a35-macprom-example
 	ipbb vivado project
 	ipbb vivado impl
