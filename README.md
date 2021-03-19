@@ -1,7 +1,10 @@
-# Enclustra PM3+AX3
+# Trenz
 
 This repository contains firmware designed to work with the IPBus firmware system ( see github.com/ipbus )
-It implements an IPBus master on an Enclustra PM3+AX3 combination. Optionally, the MAC and IP addresses can be retrived from PROM
+It implements an IPBus master on Trenz FPGA modules. At the moment only the TE0712 is supported.
+Optionally, the MAC and IP addresses can be retrived from PROM
+
+A the moment the code in this repository is deeply broken.
 
 This firmware is supported on
 a best-effort basis, and is provided on an "AS IS" BASIS, WITHOUT

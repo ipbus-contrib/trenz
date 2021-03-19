@@ -23,7 +23,9 @@
 #
 #-------------------------------------------------------------------------------
 
-@device_family = "artix7"
-@device_name = "xc7a50t"
-@device_package = "csg324"
-@device_speed = "-2"
+
+src te0712_infra.vhd
+src -c ipbus-firmware:components/ipbus_util clocks/clocks_7s_serdes.vhd ipbus_clock_div.vhd led_stretcher.vhd
+include -c ipbus-firmware:components/ipbus_util ipbus_ctrl.dep
+include -c ipbus-firmware:components/ipbus_eth artix_basex.dep
+src -c ipbus-firmware:components/ipbus_core ipbus_fabric_sel.vhd ipbus_package.vhd
