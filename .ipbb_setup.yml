@@ -1,0 +1,7 @@
+init:
+  - git submodule init
+  - git submodule update --init --recursive
+
+# reset is not yet supported
+reset:
+  - git submodule deinit -f .
