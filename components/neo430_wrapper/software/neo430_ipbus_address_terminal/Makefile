@@ -42,7 +42,7 @@ APP_INC = -I . -I ../lib/include
 # NEO430 framework
 #-------------------------------------------------------------------------------
 # This is a bit fragile ... point to neo430 checked out from github.
-NEO430_REPO_PATH=../../../../../neo430/sw
+NEO430_REPO_PATH=../../../neo430/sw
 # Path to NEO430 linker script and startup file
 NEO430_COM_PATH=$(NEO430_REPO_PATH)/common
 # Path to main NEO430 library include files
@@ -78,7 +78,7 @@ APP_SRC += $(wildcard $(NEO430_SRC_PATH)/*.c)
 APP_BIN = main.bin
 APP_ASM = main.s
 
-APPLICATION_IMAGE_FNAME = neo430_application_image_24AA025E.vhd
+APPLICATION_IMAGE_FNAME = neo430_application_image_macprom.vhd
 
 compile: $(APP_ASM) $(APP_BIN)
 install: $(APP_ASM) $(APPLICATION_IMAGE_FNAME)
@@ -163,7 +163,7 @@ $(APP_BIN): image.dat $(IMAGE_GEN)
 $(APPLICATION_IMAGE_FNAME): image.dat $(IMAGE_GEN)
 	@$(IMAGE_GEN) -app_img $< $@
 	@echo Installing application image to $(NEO430_RTL_PATH)/$(APPLICATION_IMAGE_FNAME)
-	@cp $(APPLICATION_IMAGE_FNAME) $(NEO430_RTL_PATH)/.
+	cp $(APPLICATION_IMAGE_FNAME) $(NEO430_RTL_PATH)/.
 	@rm -f $(APPLICATION_IMAGE_FNAME)
 
 

@@ -70,7 +70,7 @@ void setup_i2c(void) {
   neo430_uart_br_print("Setting up I2C core\n");
 
   eepromAddress =  neo430_gpio_port_get() & 0xFF ;
-  neo430_uart_br_print("I2C address E24AA025E EEPROM = ");
+  neo430_uart_br_print("I2C address of EEPROM (hex) = ");
   neo430_uart_print_hex_byte( eepromAddress );
   neo430_uart_br_print("\n");
    
@@ -104,7 +104,7 @@ void setup_i2c(void) {
 
 
 /* ------------------------------------------------------------
- * INFO Read data from Wishbone address
+ * INFO Read data from I2C
  * ------------------------------------------------------------ */
 int16_t read_i2c_address(uint8_t addr , uint8_t n , uint8_t data[]) {
 
@@ -160,6 +160,9 @@ int16_t read_i2c_address(uint8_t addr , uint8_t n , uint8_t data[]) {
 
 }
 
+/* ------------------------------------------------------------
+ * INFO Write data to I2C 
+ * ------------------------------------------------------------ */
 int16_t write_i2c_address(uint8_t addr , uint8_t nToWrite , uint8_t data[], bool stop) {
 
 
@@ -215,87 +218,93 @@ int16_t write_i2c_address(uint8_t addr , uint8_t nToWrite , uint8_t data[], bool
     return nwritten;
 }
 
-bool enable_i2c_bridge() {
 
-  bool mystop;
-  uint8_t I2CBRIDGE = 0x21;
-  uint8_t wordsForAddress = 1;
-  uint8_t wordsToWrite = 2;
+/* ------------------------------------------------------------
+ * INFO Wake up ATSHA204A crypto EEPROM on AX3
+ * ------------------------------------------------------------ */
+bool wake_ax3_ATSHA204A (){
 
-  neo430_uart_br_print("\nEnabling I2C bridge:\n");
-  buffer[0] = 0x01;
-  buffer[1] = 0x7F;
-  mystop = true;
-#if DEBUG > 2
-   neo430_uart_br_print("\nWriting 0x01,0x7F to I2CBRIDGE. Stop = true:\n");
-#endif
-  write_i2c_address(I2CBRIDGE , wordsToWrite , buffer, mystop );
+  // See Section 6.1.1 of https://ww1.microchip.com/downloads/en/DeviceDoc/ATSHA204A-Data-Sheet-40002025A.pdf
+  // first write a string of zeros to SDA
+  // 
+   // Set transmit register (write operation, LSB=0)
+  neo430_wishbone32_write8(ADDR_DATA , 0x00 );
+  //  Set Command Register to 0x90 (write, start)
+  neo430_wishbone32_write8(ADDR_CMD_STAT, STARTCMD | WRITECMD | STOPCMD );
 
-  mystop=false;
-  buffer[0] = 0x01;
-#if DEBUG > 2
-   neo430_uart_br_print("\nWriting 0x01 to I2CBRIDGE. Stop = false:\n");
-#endif
-  write_i2c_address(I2CBRIDGE , wordsForAddress , buffer, mystop );
-  zero_buffer(buffer , sizeof(buffer));
+  // now try to regain synchronization
+  // See section 6.5
+  // 
+  neo430_wishbone32_write8(ADDR_DATA , 0xFF );
+  //  Set Command Register to 0x90 (write, start)
+  neo430_wishbone32_write8(ADDR_CMD_STAT, STARTCMD | WRITECMD );
+  // send an additional start command followed by a stop command
+  neo430_wishbone32_write8(ADDR_CMD_STAT, STARTCMD | STOPCMD );
 
-#if DEBUG > 2
-   neo430_uart_br_print("\nReading word from I2CBRIDGE:\n");
-   uint8_t wordsToRead = 1;
-  read_i2c_address(I2CBRIDGE, wordsToRead , buffer);
+  return true; // TODO - return a status
 
-  neo430_uart_br_print("Post RegDir: ");
-  neo430_uart_print_hex_dword(buffer[0]);
-  neo430_uart_br_print("\n");
-#endif 
-
-  return true; // TODO: return a status, rather than True all the time...
- 
 }
 
-/*
-#EEPROM BEGIN
-doEeprom= True
-if doEeprom:
-  zeEEPROM= E24AA025E48T(master_I2C, 0x57)
-  res=zeEEPROM.readEEPROM(0xfa, 6)
-  result="  EEPROM ID:\n\t"
-  for iaddr in res:
-      result+="%02x "%(iaddr)
-  print result
-#EEPROM END
- */
+
+/* ------------------------------------------------------------
+ * INFO Configure I2C switch
+ * ------------------------------------------------------------ */
+bool config_i2c_switch(uint8_t ctrlByte) {
+
+  bool mystop = true;
+  uint8_t I2CSWITCH = 0xE0;
+  uint8_t bytesToWrite = 1;
+  buffer[0] = ctrlByte;
+
+  neo430_uart_br_print("\nEnabling I2C Channel: ");
+  neo430_uart_print_hex_byte( ctrlByte );
+  neo430_uart_br_print("\n");
+
+  write_i2c_address(I2CSWITCH , bytesToWrite , buffer, mystop);
+
+  zero_buffer(buffer , sizeof(buffer));
+
+  return true; // TODO: return a status, rather than True all the time...
+}
 
 
 /* ---------------------------*
  *  Read bytes from PROM      *
  * ---------------------------*/
-int16_t  read_i2c_prom( uint8_t startAddress , uint8_t  wordsToRead, uint8_t buffer[] ){
+int16_t  read_i2c_prom( uint8_t startAddress ,  // Start address in PROM
+			uint8_t  bytesToRead,   // Bytes to read from PROM
+			uint8_t buffer[]        // Shared buffer to put the data in.
+			){
 
   bool mystop = false;
 
   buffer[0] = startAddress;
+#if PROMNADDRBYTES == 2
+  buffer[1] = startAddress;
+#endif
+
 #if DEBUG > 2
   neo430_uart_br_print(" read_i2c_prom: Write device ID: ");
 #endif
-  write_i2c_address( eepromAddress , 1 , buffer, mystop );
+
+  write_i2c_address( eepromAddress , PROMNADDRBYTES , buffer, mystop );
 
 #if DEBUG > 2
   neo430_uart_br_print("read_i2c_prom: Read EEPROM memory: ");
-  zero_buffer(buffer , wordsToRead);
+  zero_buffer(buffer , bytesToRead);
 #endif
 
-  read_i2c_address( eepromAddress , wordsToRead , buffer);
+  read_i2c_address( eepromAddress , bytesToRead , buffer);
 
 #if DEBUG > 2
   neo430_uart_br_print("Data from EEPROM\n");
-  for (uint8_t i=0; i< wordsToRead; i++){
+  for (uint8_t i=0; i< bytesToRead; i++){
     neo430_uart_br_print("\n");
     neo430_uart_print_hex_dword(buffer[i]);    
   }
 #endif
 
-  return wordsToRead;
+  return 0; // replace with a status at some point
 }
 
 /* -------------------------------------*
@@ -326,7 +335,7 @@ void print_IP_address( uint32_t ipAddr){
  *  Print 64 bit number as MAC address  *
  * -------------------------------------*/
 void print_MAC_address( uint64_t uid){
-  neo430_uart_br_print("\nUID from E24AA025E48T = ");
+  neo430_uart_br_print("\nUID from PROM  = ");
   neo430_uart_print_hex_qword(uid);
   //neo430_uart_print_hex_dword((uid>>32) & 0xFFFFFFFF );
   //neo430_uart_print_hex_dword(uid & 0xFFFFFFFF );
@@ -343,35 +352,63 @@ void print_GPO( uint16_t gpo){
   neo430_uart_br_print("\n");
 
 }
-/* ---------------------------*
- *  Read UID from E24AA025E   *
- * ---------------------------*/
-int64_t read_E24AA025E48T(){
+/* -------------------------------------------------*
+ *  Read UID from PROM ( e.g. E24AA025E , AT24C256) *
+ * -------------------------------------------------*/
+int64_t read_UID(){
 
-  uint8_t wordsToRead = 6;
+  
   //  int16_t status;
   uint64_t uid = 0;
+  uint8_t b0, b1, b2, b3, b4, b5;
 
-  //status =  read_i2c_prom( startAddress , wordsToRead, buffer );
-  read_i2c_prom( PROMUIDADDR , wordsToRead, buffer );
+  neo430_uart_br_print("MAC location in I2C PROM = ");
+  neo430_uart_print_hex_byte( PROMUIDADDR );
+  neo430_uart_br_print("\n");
 
-  uid = (uint64_t)buffer[5] + ((uint64_t)buffer[4]<<8) + ((uint64_t)buffer[3]<<16) + ((uint64_t)buffer[2]<<24) + ((uint64_t)buffer[1]<<32) + ((uint64_t)buffer[0]<<40);
+  neo430_uart_br_print("Number of address bytes = ");
+  neo430_uart_print_hex_byte( PROMNADDRBYTES );
+  neo430_uart_br_print("\n");
+
+// Reading all 6 bytes at once doesn't work with cheapie AT24C256 
+// Nasty work-around
+//const uint8_t bytesToRead = 6;
+//  read_i2c_prom( PROMUIDADDR , bytesToRead, buffer );
+
+  const uint8_t bytesToRead = 1;
+  read_i2c_prom( PROMUIDADDR , bytesToRead, buffer );
+  b0 = buffer[0];
+  read_i2c_prom( PROMUIDADDR+1 , bytesToRead, buffer );
+  b1 = buffer[0];
+  read_i2c_prom( PROMUIDADDR+2 , bytesToRead, buffer );
+  b2 = buffer[0];
+  read_i2c_prom( PROMUIDADDR+3 , bytesToRead, buffer );
+  b3 = buffer[0];
+  read_i2c_prom( PROMUIDADDR+4 , bytesToRead, buffer );
+  b4 = buffer[0];
+  read_i2c_prom( PROMUIDADDR+5 , bytesToRead, buffer );
+  b5 = buffer[0];
+
+  // Use this when able to read out 6 bytes at a time
+  //uid = (uint64_t)buffer[5] + ((uint64_t)buffer[4]<<8) + ((uint64_t)buffer[3]<<16) + ((uint64_t)buffer[2]<<24) + ((uint64_t)buffer[1]<<32) + ((uint64_t)buffer[0]<<40);
+  uid = (uint64_t)b5 + ((uint64_t)b4<<8) + ((uint64_t)b3<<16) + ((uint64_t)b2<<24) + ((uint64_t)b1<<32) + ((uint64_t)b0<<40);
 
   return uid; // Returns bottom 48-bit UID in a 64-bit word
 
 }
 
+
 /* ---------------------------*
- *  Read 4 bytes from E24AA025E   *
+ *  Read 4 bytes from  PROM ( e.g. E24AA025E , AT24C256)   *
  * ---------------------------*/
 uint32_t read_Prom() {
 
-  uint8_t wordsToRead = 4;
+  const uint8_t bytesToRead = 4;
   //  int16_t status;
   uint32_t uid ;
 
-  //status =  read_i2c_prom( startAddress , wordsToRead, buffer );
-  read_i2c_prom( PROMMEMORYADDR , wordsToRead, buffer );
+  //status =  read_i2c_prom( startAddress , bytesToRead, buffer );
+  read_i2c_prom( PROMMEMORYADDR , bytesToRead, buffer );
 
   uid = (uint32_t)buffer[3] + ((uint32_t)buffer[2]<<8) + ((uint32_t)buffer[1]<<16) + ((uint32_t)buffer[0]<<24);
 
@@ -382,7 +419,7 @@ uint32_t read_Prom() {
 
 int16_t write_Prom(){
 
-  uint8_t wordsToWrite = 4;
+  uint8_t bytesToWrite = 4;
  
   int16_t status = 0;
   bool mystop = true;
@@ -392,29 +429,35 @@ int16_t write_Prom(){
   uint32_t data = hex_str_to_uint32(command);
 
   // Pack data to write into buffer
+
+  // First the address inside the PROM. Some EEPROM need two address bytes
   buffer[0] = PROMMEMORYADDR;
-  
-  for (uint8_t i=0; i< wordsToWrite; i++){
-    buffer[wordsToWrite-i] = (data >> (i*8)) & 0xFF ;    
+ #if PROMNADDRBYTES == 2
+  buffer[1] = PROMMEMORYADDR;
+ #endif
+
+  for (uint8_t i=0; i< bytesToWrite; i++){
+    buffer[bytesToWrite-i + PROMNADDRBYTES -1 ] = (data >> (i*8)) & 0xFF ;    
   }
 
-  status = write_i2c_address(eepromAddress , (wordsToWrite+1), buffer, mystop);
+  status = write_i2c_address(eepromAddress , (bytesToWrite+PROMNADDRBYTES), buffer, mystop);
 
   return status;
 
 }
 
 /* ---------------------------*
- *  Read 2 bytes from E24AA025E   *
+ *  Read GPO value from PROM   *
+ *  Broken for 2 addr byte proms *
  * ---------------------------*/
 uint16_t read_PromGPO() {
 
-  uint8_t wordsToRead = 2;
+  uint8_t bytesToRead = 2;
   //  int16_t status;
   uint16_t gpo ;
 
-  //status =  read_i2c_prom( startAddress , wordsToRead, buffer );
-  read_i2c_prom( PROMMEMORY_GPO_ADDR , wordsToRead, buffer );
+  //status =  read_i2c_prom( startAddress , bytesToRead, buffer );
+  read_i2c_prom( PROMMEMORY_GPO_ADDR , bytesToRead, buffer );
 
   gpo = ((uint16_t)buffer[1]) + ((uint16_t)buffer[0]<<8);
 
@@ -422,10 +465,13 @@ uint16_t read_PromGPO() {
 
 }
 
-
+/* ---------------------------*
+ *  Write  GPO value from PROM     *
+ *  Broken for 2 addr byte proms *
+ * ---------------------------*/
 int16_t write_PromGPO(){
 
-  uint8_t wordsToWrite = 2;
+  uint8_t bytesToWrite = 2;
  
   int16_t status = 0;
   bool mystop = true;
@@ -437,14 +483,33 @@ int16_t write_PromGPO(){
   // Pack data to write into buffer
   buffer[0] = PROMMEMORY_GPO_ADDR;
   
-  for (uint8_t i=0; i< wordsToWrite; i++){
-    buffer[wordsToWrite-i] = (data >> (i*8)) & 0xFF ;    
+  for (uint8_t i=0; i< bytesToWrite; i++){
+    buffer[bytesToWrite-i] = (data >> (i*8)) & 0xFF ;    
   }
 
-  status = write_i2c_address(eepromAddress , (wordsToWrite+1), buffer, mystop);
+  status = write_i2c_address(eepromAddress , (bytesToWrite+1), buffer, mystop);
 
   return status;
 
+}
+
+void dump_Prom(){
+
+  uint8_t memAddress;
+  const uint8_t bytesToRead = 1;
+  uint8_t byteRead;
+
+  neo430_uart_br_print("Contents of PROM = ");
+  
+  for(memAddress =0; memAddress<32; memAddress++) {
+    read_i2c_prom( memAddress, bytesToRead, buffer );
+    byteRead = buffer[0];
+
+    neo430_uart_print_hex_byte( memAddress );
+    neo430_uart_br_print(" ");
+    neo430_uart_print_hex_byte( byteRead );
+    neo430_uart_br_print("\n");
+  }
 }
 
 /* ------------------------------------------------------------

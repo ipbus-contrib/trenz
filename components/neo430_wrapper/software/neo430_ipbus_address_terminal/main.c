@@ -32,6 +32,7 @@
 // Libraries
 #include <stdint.h>
 #include <string.h>
+#include "neo430_cmd_buffer.h"
 #include "neo430.h"
 #include "neo430_i2c.h"
 #include "neo430_wishbone_mac_ip.h"
@@ -50,14 +51,14 @@ bool useRARP;
  * ------------------------------------------------------------ */
 int setMacIP(void){
 
-  // first enable I2C brige
-  enable_i2c_bridge();
+  // first configure i2c switch
+  config_i2c_switch(0x4);
 
   // set IPBus reset
   neo430_wishbone_writeIPBusReset(true);
 
   // Then read MAC address
-  uid = read_E24AA025E48T();
+  uid = read_UID();
   uid = ( uid == 0 ) ? 0x020ddba11644 : uid; // if can't read UID, then set to dummy value.
   // and write to control lines
   neo430_wishbone_writeMACAddr(uid);
@@ -73,9 +74,9 @@ int setMacIP(void){
   useRARP = ((ipAddr == 0xFFFFFFFF) || (ipAddr == 0) || FORCE_RARP==1 ) ? true : false;
   neo430_wishbone_writeRarpFlag(useRARP);
 
-  // then read the value to write to general purpose output (used for endpoint addr in DUNE)
-  gpo = read_PromGPO();
-  neo430_gpio_port_set(gpo);
+  //  // then read the value to write to general purpose output (used for endpoint addr in DUNE)
+  //gpo = read_PromGPO();
+  //neo430_gpio_port_set(gpo);
 
   // then release IPBus reset line
   neo430_wishbone_writeIPBusReset(false);
@@ -91,13 +92,14 @@ int main(void) {
 
   uint16_t length = 0;
   uint16_t selection = 0;
+  uint8_t ctrlByte = 0x0;
 
   // setup UART
   neo430_uart_setup(BAUD_RATE);
   //  USI_CT = (1<<USI_CT_EN);
  
   neo430_uart_br_print( "\n----------------------------------------\n"
-                          "- IPBus Address Control Terminal v0.15 -\n"
+                          "- IPBus Address Control Terminal v0.20 -\n"
                           "----------------------------------------\n\n");
 
   // check if WB unit was synthesized, exit if no WB is available
@@ -117,7 +119,6 @@ int main(void) {
   setMacIP();
     
   for (;;) {
-
     neo430_uart_br_print("\nEnter a command:> ");
 
     //length = uart_scan(command, MAX_CMD_LENGTH);
@@ -125,95 +126,129 @@ int main(void) {
     neo430_uart_br_print("\n");
 
     if (!length) // nothing to be done
-     continue;
+        continue;
 
-        // decode input
+    // decode input
     selection = 0;
     if (!strcmp(command, "help"))
-      selection = 1;
-    if (!strcmp(command, "enable"))
-      selection = 2;
+    	selection = 1;
+    if (!strcmp(command, "config"))
+    	selection = 2;
     if (!strcmp(command, "id"))
-      selection = 3;
+    	selection = 3;
 #if FORCE_RARP == 0
     if (!strcmp(command, "write"))
-      selection = 4;
+    	selection = 4;
     if (!strcmp(command, "read"))
-      selection = 5;
+    	selection = 5;
 #endif
-    if (!strcmp(command, "writegpo"))
-      selection = 6;
-    if (!strcmp(command, "readgpo"))
-      selection = 7;
+    //if (!strcmp(command, "writegpo"))
+    //  selection = 6;
+    //if (!strcmp(command, "readgpo"))
+    //  selection = 7;
+    if (!strcmp(command, "dump"))
+    	selection = 7;
     if (!strcmp(command, "set"))
-      selection = 8;
+    	selection = 8;
     if (!strcmp(command, "reset"))
-      selection = 9;
+    	selection = 9;
 
-        // execute command
+    // execute command
     switch(selection) {
 
-      case 1: // print help menu
+    case 1: // print help menu
         neo430_uart_br_print("Available commands:\n"
                       " help     - show this text\n"
-                      " enable   - enable I2C bridge on Enclustra\n"
+                      " config    - Sets SFP I2C switch\n"
                       " id       - Read Unique ID\n"
 #if FORCE_RARP == 0
                       " write    - write IP addr to PROM\n"
                       " read     - read IP addr from PROM\n"
 #endif
-                      " writegpo - write GPO value to PROM\n"
-                      " readgpo  - read GPO value from PROM\n"
-                      " set      - read from E24AA025E48T UID and PROM area. Set MAC and IP address\n"
+		     //" writegpo - write GPO value to PROM\n"
+		     //" readgpo  - read GPO value from PROM\n"
+		              " dump     - dump EEPROM contents\n"
+                      " set      - read from PROM. Set MAC and IP address\n"
                       " reset    - reset CPU\n"
                       );
         break;
 
-      case 2: // Enable I2C Bridge
-	     
-	enable_i2c_bridge();
+    case 2: // Configures I2C switch
+        for(;;){
+            neo430_uart_br_print("\nWhich Channel to select 0, 1, 2 or 3:> ");
+            length = neo430_uart_scan(chan, 2,1);
+            neo430_uart_br_print("\n");
+
+            if (!length){// nothing to be done
+                continue;
+            }
+            else if (!strcmp(chan, "0")){
+                ctrlByte = 0x1;
+                break;
+            }
+            else if (!strcmp(chan, "1")){
+                ctrlByte = 0x2;
+                break;
+            }
+            else if(!strcmp(chan, "2")){
+                ctrlByte = 0x3;
+                break;
+            }
+            else if (!strcmp(chan, "3")){
+                ctrlByte = 0x4;
+                break;
+            }
+            else{
+                neo430_uart_br_print("\n Please type: 0, 1, 2 or 3\n");
+                continue;
+            }
+        }
+        config_i2c_switch(ctrlByte);
         break;
 
-      case 3: // read from Unique ID address
-	     uid = read_E24AA025E48T();
-       print_MAC_address(uid);
+    case 3: // read from Unique ID address
+        config_i2c_switch(0x4);
+        uid = read_UID();
+        print_MAC_address(uid);
         break;
 
 #if FORCE_RARP == 0
-      case 4: // write to PROM
-	     write_Prom();
+    case 4: // write to PROM
+        config_i2c_switch(0x4);
+        write_Prom();
         break;
 
-      case 5: // read from PROM
-	     ipAddr = read_Prom();
-	     print_IP_address(ipAddr);
-	     break;
+    case 5: // read from PROM
+        config_i2c_switch(0x4);
+        ipAddr = read_Prom();
+        print_IP_address(ipAddr);
+        break;
 #endif
 
-      case 6: // write General Purpose Output value to PROM
+    case 6: // write General Purpose Output value to PROM
+        config_i2c_switch(0x4);
         write_PromGPO();
- 
-       case 7: // read GPO value from PROM
-        gpo = read_PromGPO();
-        print_GPO(gpo);
 
-      case 8: // set MAC , IP address , RARP flag
-	      setMacIP();
-        break;
-        
+    //case 7: // read GPO value from PROM
+         //gpo = read_PromGPO();
+         //print_GPO(gpo);
 
-      case 9: // restart
-	while ((UART_CT & (1<<UART_CT_TX_BUSY)) != 0); // wait for current UART transmission
+    //case 8: // set MAC , IP address , RARP flag
+    //    setMacIP();
+    //    break;
+    case 7:  // dump entire contents of PROM
+        config_i2c_switch(0x4);
+        dump_Prom();
+
+    case 9: // restart
+        while ((UART_CT & (1<<UART_CT_TX_BUSY)) != 0); // wait for current UART transmission
         neo430_soft_reset();
         break;
 
-      default: // invalid command
+    default: // invalid command
         neo430_uart_br_print("bad cmd. 'help' for list.\n");
         break;
     }
-    
-
-
   }
      return 0;
 }

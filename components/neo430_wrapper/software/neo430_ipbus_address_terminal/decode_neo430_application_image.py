@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 # Use to pull strings out of neo430_application_image.vhd
 # Run with neo430_application_image.vhd as command line argument. 
 # Pipe into strings to get strings...

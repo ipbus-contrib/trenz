@@ -13,7 +13,7 @@
 #ifndef neo430_wishbone_mac_ip_h
 #define neo430_wishbone_mac_ip_h
 
-#define DEBUG 1
+// #define DEBUG 1
 
 #define ADDR_IP_ADDR       0x0100
 #define ADDR_MAC_ADDR_LOW  0x0110
