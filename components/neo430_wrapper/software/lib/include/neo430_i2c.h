@@ -103,6 +103,22 @@ void print_GPO( uint16_t gpo);
 //#define PROMUIDADDR 0x10
 #endif
 
+#ifndef I2C_MUX_CHAN_0
+#define I2C_MUX_CHAN_0 0x01
+#endif
+
+#ifndef I2C_MUX_CHAN_1
+#define I2C_MUX_CHAN_1 0x02
+#endif
+
+#ifndef I2C_MUX_CHAN_2
+#define I2C_MUX_CHAN_2 0x04
+#endif
+
+#ifndef I2C_MUX_CHAN_3
+#define I2C_MUX_CHAN_3 0x08
+#endif
+
 // Number of address bytes needed to address PROM
 //  E24AA025E needs one address byte sent AT24C256 needs two
 #ifndef PROMNADDRBYTES

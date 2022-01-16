@@ -252,7 +252,7 @@ bool wake_ax3_ATSHA204A (){
 bool config_i2c_switch(uint8_t ctrlByte) {
 
   bool mystop = true;
-  uint8_t I2CSWITCH = 0xE0;
+  uint8_t I2CSWITCH = 0x70;
   uint8_t bytesToWrite = 1;
   buffer[0] = ctrlByte;
 

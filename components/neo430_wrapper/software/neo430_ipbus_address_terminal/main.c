@@ -52,7 +52,7 @@ bool useRARP;
 int setMacIP(void){
 
   // first configure i2c switch
-  config_i2c_switch(0x4);
+  config_i2c_switch(I2C_MUX_CHAN_3);
 
   // set IPBus reset
   neo430_wishbone_writeIPBusReset(true);
@@ -183,19 +183,19 @@ int main(void) {
                 continue;
             }
             else if (!strcmp(chan, "0")){
-                ctrlByte = 0x1;
+                ctrlByte = I2C_MUX_CHAN_0;
                 break;
             }
             else if (!strcmp(chan, "1")){
-                ctrlByte = 0x2;
+                ctrlByte = I2C_MUX_CHAN_1;
                 break;
             }
             else if(!strcmp(chan, "2")){
-                ctrlByte = 0x3;
+                ctrlByte = I2C_MUX_CHAN_2;
                 break;
             }
             else if (!strcmp(chan, "3")){
-                ctrlByte = 0x4;
+                ctrlByte = I2C_MUX_CHAN_3;
                 break;
             }
             else{
@@ -207,26 +207,26 @@ int main(void) {
         break;
 
     case 3: // read from Unique ID address
-        config_i2c_switch(0x4);
+        config_i2c_switch(I2C_MUX_CHAN_3);
         uid = read_UID();
         print_MAC_address(uid);
         break;
 
 #if FORCE_RARP == 0
     case 4: // write to PROM
-        config_i2c_switch(0x4);
+        config_i2c_switch(I2C_MUX_CHAN_3);
         write_Prom();
         break;
 
     case 5: // read from PROM
-        config_i2c_switch(0x4);
+        config_i2c_switch(I2C_MUX_CHAN_3);
         ipAddr = read_Prom();
         print_IP_address(ipAddr);
         break;
 #endif
 
     case 6: // write General Purpose Output value to PROM
-        config_i2c_switch(0x4);
+        config_i2c_switch(I2C_MUX_CHAN_3);
         write_PromGPO();
 
     //case 7: // read GPO value from PROM
@@ -237,7 +237,7 @@ int main(void) {
     //    setMacIP();
     //    break;
     case 7:  // dump entire contents of PROM
-        config_i2c_switch(0x4);
+        config_i2c_switch(I2C_MUX_CHAN_3);
         dump_Prom();
 
     case 9: // restart
