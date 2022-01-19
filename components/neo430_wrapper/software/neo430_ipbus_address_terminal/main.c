@@ -51,12 +51,12 @@ bool useRARP;
  * ------------------------------------------------------------ */
 int setMacIP(void){
 
-  // first configure i2c switch
-  config_i2c_switch(I2C_MUX_CHAN_3);
-
   // set IPBus reset
   neo430_wishbone_writeIPBusReset(true);
 
+  // configure i2c switch
+  config_i2c_switch(I2C_MUX_CHAN_3);
+  
   // Then read MAC address
   uid = read_UID();
   uid = ( uid == 0 ) ? 0x020ddba11644 : uid; // if can't read UID, then set to dummy value.
@@ -159,8 +159,8 @@ int main(void) {
     case 1: // print help menu
         neo430_uart_br_print("Available commands:\n"
                       " help     - show this text\n"
-                      " config    - Sets SFP I2C switch\n"
-                      " id       - Read Unique ID\n"
+                      " config    - sets SFP I2C switch channel\n"
+                      " id       - read Unique ID\n"
 #if FORCE_RARP == 0
                       " write    - write IP addr to PROM\n"
                       " read     - read IP addr from PROM\n"
