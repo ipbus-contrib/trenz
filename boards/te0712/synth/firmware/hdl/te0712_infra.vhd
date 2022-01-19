@@ -56,7 +56,7 @@ architecture rtl of te0712_infra is
     COMPONENT ipbus_neo430_wrapper IS
     GENERIC( 
         CLOCK_SPEED : natural := 31250000;
-        UID_I2C_ADDR : std_logic_vector(7 downto 0) := x"A0" -- Address on I2C bus of E24AA025E
+        UID_I2C_ADDR : std_logic_vector(7 downto 0) := x"50" -- Address on I2C bus of E24AA025E
         );
     PORT( 
         clk_i      : IN     std_logic;                      -- global clock, rising edge
