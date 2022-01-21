@@ -37,13 +37,19 @@ set_property PACKAGE_PIN B8 [get_ports {eth_rx_p}]
 #-------------------- GPIO --------------------
 #gpio_p/n[0] bank 14 at 3v3 for UART.
 set_property IOSTANDARD LVCMOS33 [get_ports {gpio_uart_rd  gpio_uart_td}]
+
 #gpio_p/n[1] bank 16 at 2v5 for LVDS Clk monitoring.
+set checkPorts [get_ports * -filter {DIRECTION == OUT && NAME =~ "gpio_clk_mon*" }]
+if { [llength $checkPorts] != 0} {
 set_property IOSTANDARD LVDS_25 [get_ports {gpio_clk_mon_p gpio_clk_mon_n}]
+# GPIO1 B16_L3_P
+set_property PACKAGE_PIN C14 [get_ports {gpio_clk_mon_p}]
+# GPIO0 B16_L3_N
+set_property PACKAGE_PIN C15 [get_ports {gpio_clk_mon_n}]
+}
 
 # GPIO0 B16_L14_P
 #set_property PACKAGE_PIN E19 [get_ports {gpio_p[0]}]
-# GPIO1 B16_L3_P
-set_property PACKAGE_PIN C14 [get_ports {gpio_clk_mon_p}]
 # GPIO2 B16_L12_P
 #set_property PACKAGE_PIN D17 [get_ports {gpio_p[2]}]
 # GPIO3 B16_L8_P
@@ -59,8 +65,6 @@ set_property PACKAGE_PIN T21 [get_ports {gpio_uart_rd}]
 
 # GPIO0 B16_L14_N
 #set_property PACKAGE_PIN D19 [get_ports {gpio_n[0]}]
-# GPIO0 B16_L3_N
-set_property PACKAGE_PIN C15 [get_ports {gpio_clk_mon_n}]
 # GPIO0 B16_L12_N
 #set_property PACKAGE_PIN C17 [get_ports {gpio_n[2]}]
 # GPIO0 B16_L8_N

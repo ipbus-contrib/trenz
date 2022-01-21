@@ -26,5 +26,6 @@
 setup settings_v7.tcl
 @vivado.mcsfile_options ="-size 64 -interface SPIx4" 
 include te0712_infra.dep
+src -c ipbus-firmware:components/ipbus_core ipbus_package.vhd
 src --cd ../ucf te0712.tcl
 src -c ipbus-firmware:components/ipbus_util --cd ../ucf clock_utils.tcl
