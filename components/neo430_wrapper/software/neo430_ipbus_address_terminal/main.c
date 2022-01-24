@@ -50,13 +50,13 @@ bool useRARP;
  * Function to read EEPROM and set MAC,IP addresses
  * ------------------------------------------------------------ */
 int setMacIP(void){
-
+  
+    // configure i2c switch
+  config_i2c_switch(I2C_MUX_CHAN_3);
+  
   // set IPBus reset
   neo430_wishbone_writeIPBusReset(true);
 
-  // configure i2c switch
-  config_i2c_switch(I2C_MUX_CHAN_3);
-  
   // Then read MAC address
   uid = read_UID();
   uid = ( uid == 0 ) ? 0x020ddba11644 : uid; // if can't read UID, then set to dummy value.
