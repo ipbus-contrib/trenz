@@ -11,8 +11,21 @@ create_clock -period 8.000 -name eth_refclk [get_ports eth_clk_p]
 # Ethernet monitor clock hack (62.5MHz)
 create_clock -period 16.000 -name clk_dc [get_pins infra/eth/dc_buf/O]
 
+#--
+# IPbus clock
+create_generated_clock -name ipbus_clk -source [get_pins infra/clocks/mmcm/CLKIN1] [get_pins infra/clocks/mmcm/CLKOUT1]
+
+# 200 Mhz derived clock
+create_generated_clock -name clk_200 -source [get_pins infra/clocks/mmcm/CLKIN1] [get_pins infra/clocks/mmcm/CLKOUT3]
+
+# Clock constraints
+set_false_path -through [get_pins infra/clocks/rst_reg/Q]
+set_false_path -through [get_nets infra/clocks/nuke_i]
+#--
+
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks eth_refclk] -group [get_clocks -include_generated_clocks [get_clocks -filter {name =~ infra/eth/phy/*/RXOUTCLK}]] -group [get_clocks -include_generated_clocks [get_clocks -filter {name =~ infra/eth/phy/*/TXOUTCLK}]]
 
+# MGT_CLK_0_P/N
 set_property PACKAGE_PIN F6 [get_ports eth_clk_p]
 set_property PACKAGE_PIN E6 [get_ports eth_clk_n]
 
