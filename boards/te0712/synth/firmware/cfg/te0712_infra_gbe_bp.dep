@@ -1,0 +1,44 @@
+#-------------------------------------------------------------------------------
+#
+#   Copyright 2017 - Rutherford Appleton Laboratory and University of Bristol
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+#                                     - - -
+#
+#   Additional information about ipbus-firmare and the list of ipbus-firmware
+#   contacts are available at
+#
+#       https://ipbus.web.cern.ch/ipbus
+#
+#-------------------------------------------------------------------------------
+
+
+src te0712_infra_gbe_bp.vhd
+src ipbus_decode_top_mib_gbe_bp.vhd
+
+# The output of the compilation of the C running on the NEO.
+# To rebuild, use gcc-msp430 and the s/ware in the s/ware sub directory
+src -c components/neo430_wrapper neo430_application_image_macprom.vhd
+
+include -c components/neo430_wrapper neo430_wrapper.dep
+src -c ipbus-firmware:components/ipbus_util clocks/clocks_7s_serdes_dual_phy.vhd ipbus_clock_div.vhd led_stretcher.vhd
+src -c ipbus-firmware:components/ipbus_slaves ipbus_roreg_v.vhd
+include -c ipbus-firmware:components/ipbus_util ipbus_ctrl.dep
+include -c ipbus-firmware:components/ipbus_eth artix_basex_dual_phy.dep
+src -c ipbus-firmware:components/ipbus_core ipbus_package.vhd
+
+# Pull in TCL that will put neo430_package etc. into neo430, not work.
+setup  -c components/neo430_wrapper -f ../cfg/neo430_macprom.tcl
+
+src -c components/hw pdts_mib_bp_ipbus.vhd

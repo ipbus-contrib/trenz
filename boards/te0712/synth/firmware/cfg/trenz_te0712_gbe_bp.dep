@@ -21,11 +21,11 @@
 #
 #       https://ipbus.web.cern.ch/ipbus
 #
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
-src -c boards/te0712/synth/ top_te0712_mib_macprom.vhd 
-
-include -c boards/te0712/synth a100-2.dep
-include -c boards/te0712/synth trenz_te0712.dep
-
-include -c ipbus-firmware:components/ipbus_util ipbus_example.dep
+setup settings_v7.tcl
+@vivado.mcsfile_options ="-size 64 -interface SPIx4" 
+include te0712_infra_gbe_bp.dep
+src -c ipbus-firmware:components/ipbus_core ipbus_package.vhd
+src --cd ../ucf te0712.tcl
+src -c ipbus-firmware:components/ipbus_util --cd ../ucf clock_utils.tcl
