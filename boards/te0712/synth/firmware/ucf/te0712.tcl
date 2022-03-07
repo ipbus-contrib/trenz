@@ -29,6 +29,8 @@ set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks eth_
 set_property PACKAGE_PIN F6 [get_ports eth_clk_p]
 set_property PACKAGE_PIN E6 [get_ports eth_clk_n]
 
+set checkPorts [get_ports * -filter {NAME =~ "eth_sfp_*" }]
+if { [llength $checkPorts] != 0} {
 # SFP for IPBUS control. SFP0 in MIB schematic.
 set_property IOSTANDARD LVCMOS25 [get_ports {eth_sfp_los eth_sfp_tx_dis}]
 # SFP.LOS0, B16_L10_N
@@ -38,14 +40,14 @@ set_property PACKAGE_PIN B17 [get_ports {eth_sfp_tx_dis}]
 false_path {eth_sfp_los} eth_refclk
 
 # SFP.RD_N0, MGT_TX0_N
-set_property PACKAGE_PIN A4 [get_ports {eth_tx_n}]
+set_property PACKAGE_PIN A4 [get_ports {eth_sfp_tx_n}]
 # SFP.RD_P0, MGT_TX0_P
-set_property PACKAGE_PIN B4 [get_ports {eth_tx_p}]
-
+set_property PACKAGE_PIN B4 [get_ports {eth_sfp_tx_p}]
 # SFP.TD_N0, MGT_RX0_N
-set_property PACKAGE_PIN A8 [get_ports {eth_rx_n}]
+set_property PACKAGE_PIN A8 [get_ports {eth_sfp_rx_n}]
 # SFP.TD_P0, MGT_RX0_P
-set_property PACKAGE_PIN B8 [get_ports {eth_rx_p}]
+set_property PACKAGE_PIN B8 [get_ports {eth_sfp_rx_p}]
+}
 
 #-------------------- GPIO --------------------
 #gpio_p/n[0] bank 14 at 3v3 for UART.

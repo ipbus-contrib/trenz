@@ -23,9 +23,22 @@
 #
 #-------------------------------------------------------------------------------
 
-setup settings_v7.tcl
-@vivado.mcsfile_options ="-size 64 -interface SPIx4" 
-include te0712_infra_gbe_bp.dep
+
+src te0712_infra_dual_ipb.vhd
+src ipbus_decode_top_mib_gbe_bp.vhd
+
+# The output of the compilation of the C running on the NEO.
+# To rebuild, use gcc-msp430 and the s/ware in the s/ware sub directory
+src -c components/neo430_wrapper neo430_application_image_macprom.vhd
+
+include -c components/neo430_wrapper neo430_wrapper.dep
+src -c ipbus-firmware:components/ipbus_util clocks/clocks_7s_serdes_dual_phy.vhd ipbus_clock_div.vhd led_stretcher.vhd
+src -c ipbus-firmware:components/ipbus_slaves ipbus_roreg_v.vhd
+include -c ipbus-firmware:components/ipbus_util ipbus_ctrl.dep
+include -c ipbus-firmware:components/ipbus_eth artix_basex_dual_phy.dep
 src -c ipbus-firmware:components/ipbus_core ipbus_package.vhd
-src --cd ../ucf te0712.tcl
-src -c ipbus-firmware:components/ipbus_util --cd ../ucf clock_utils.tcl
+
+# Pull in TCL that will put neo430_package etc. into neo430, not work.
+setup  -c components/neo430_wrapper -f ../cfg/neo430_macprom.tcl
+
+src -c components/hw pdts_mib_bp_ipbus.vhd
