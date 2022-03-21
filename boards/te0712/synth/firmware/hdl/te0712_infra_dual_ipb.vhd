@@ -177,7 +177,7 @@ begin
     
 -- Ethernet MAC core and PHY interface
 	
-	eth: entity work.eth_7s_1000basex_gtp
+	eth: entity work.eth_7s_1000basex_gtp_shared_logic_out
 		port map(
 			gt_clkp          => eth_clk_p,
 			gt_clkn          => eth_clk_n,

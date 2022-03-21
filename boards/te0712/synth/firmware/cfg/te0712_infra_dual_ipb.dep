@@ -32,10 +32,10 @@ src ipbus_decode_top_mib_gbe_bp.vhd
 src -c components/neo430_wrapper neo430_application_image_macprom.vhd
 
 include -c components/neo430_wrapper neo430_wrapper.dep
-src -c ipbus-firmware:components/ipbus_util clocks/clocks_7s_serdes_dual_phy.vhd ipbus_clock_div.vhd led_stretcher.vhd
+src -c ipbus-firmware:components/ipbus_util clocks/clocks_7s_serdes_multi_gtps.vhd ipbus_clock_div.vhd led_stretcher.vhd
 src -c ipbus-firmware:components/ipbus_slaves ipbus_roreg_v.vhd
 include -c ipbus-firmware:components/ipbus_util ipbus_ctrl.dep
-include -c ipbus-firmware:components/ipbus_eth artix_basex_dual_phy.dep
+include -c ipbus-firmware:components/ipbus_eth artix_basex_shared_GTPE2_common.dep
 src -c ipbus-firmware:components/ipbus_core ipbus_package.vhd
 
 # Pull in TCL that will put neo430_package etc. into neo430, not work.

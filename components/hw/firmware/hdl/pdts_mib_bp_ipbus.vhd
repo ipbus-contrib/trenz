@@ -55,7 +55,7 @@ architecture rtl of mib_bp_ipbus is
 begin
 
 -- Ethernet MAC core and PHY interface
-    bp_eth: entity work.bp_eth_7s_1000basex_gtp
+    bp_eth: entity work.bp_eth_7s_1000basex_gtp_shared_logic_in
         port map(
             gt_txp      => eth_bp_tx_p,
             gt_txn      => eth_bp_tx_n ,
