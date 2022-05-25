@@ -21,14 +21,11 @@
 #
 #       https://ipbus.web.cern.ch/ipbus
 #
-#-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 
+src -c boards/te0712/synth/ top_te0712_mib_macprom.vhd 
 
-src -c boards/enclustra_ax3_pm3/synth top_enclustra_ax3_pm3_macprom_cryptoEEPROM.vhd
+include -c boards/te0712/synth a100-2.dep
+include -c boards/te0712/synth trenz_te0712.dep
 
-src     -c boards/enclustra_ax3_pm3/synth ../ucf/ax3_pm3_cryptoEEPROM_i2c.tcl
-
-include -c boards/enclustra_ax3_pm3/synth a35-1.dep
-include -c boards/enclustra_ax3_pm3/synth enclustra_ax3_pm3_macprom_cryptoEEPROM.dep
-src     -c boards/enclustra_ax3_pm3/synth ../ucf/set_enclustra_ftdi_voltage_2v5.tcl
 include -c ipbus-firmware:components/ipbus_util ipbus_example.dep

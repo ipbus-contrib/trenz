@@ -1,0 +1,3 @@
+[submodule "components/neo430"]
+	path = components/neo430
+	url = https://github.com/stnolting/neo430.git

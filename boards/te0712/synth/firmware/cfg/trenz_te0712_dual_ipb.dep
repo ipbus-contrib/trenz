@@ -23,9 +23,9 @@
 #
 #-------------------------------------------------------------------------------
 
-
-src -c boards/enclustra_ax3_pm3/synth top_enclustra_ax3_pm3_macprom_cryptoEEPROM.vhd
-include -c boards/enclustra_ax3_pm3/synth a50-1.dep
-include -c boards/enclustra_ax3_pm3/synth enclustra_ax3_pm3_macprom_cryptoEEPROM.dep
-src     -c boards/enclustra_ax3_pm3/synth ../ucf/set_enclustra_ftdi_voltage_2v5.tcl
-include -c ipbus-firmware:components/ipbus_util ipbus_example.dep
+setup settings_v7.tcl
+@vivado.mcsfile_options ="-size 64 -interface SPIx4" 
+include te0712_infra_dual_ipb.dep
+src -c ipbus-firmware:components/ipbus_core ipbus_package.vhd
+src --cd ../ucf te0712.tcl
+src -c ipbus-firmware:components/ipbus_util --cd ../ucf clock_utils.tcl
