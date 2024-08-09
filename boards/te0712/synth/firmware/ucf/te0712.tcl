@@ -51,7 +51,7 @@ set_property PACKAGE_PIN B8 [get_ports {eth_sfp_rx_p}]
 
 #-------------------- GPIO --------------------
 #gpio_p/n[0] bank 14 at 3v3 for UART.
-set_property IOSTANDARD LVCMOS33 [get_ports {gpio_uart_rd  gpio_uart_td}]
+#set_property IOSTANDARD LVCMOS33 [get_ports {gpio_uart_rd  gpio_uart_td}]
 
 #gpio_p/n[1] bank 16 at 2v5 for LVDS Clk monitoring.
 set checkPorts [get_ports * -filter {DIRECTION == OUT && NAME =~ "gpio_clk_mon*" }]
@@ -74,7 +74,7 @@ set_property PACKAGE_PIN C15 [get_ports {gpio_clk_mon_n}]
 # GPIO5 B14_L9_P
 #set_property PACKAGE_PIN Y21 [get_ports {gpio_p[5]}]
 # GPIO6 B14_L4_P
-set_property PACKAGE_PIN T21 [get_ports {gpio_uart_rd}]
+##set_property PACKAGE_PIN T21 [get_ports {gpio_uart_rd}]
 # GPIO7 B16_L4_N
 #set_property PACKAGE_PIN E14 [get_ports {gpio_p[7]}]
 
@@ -89,7 +89,7 @@ set_property PACKAGE_PIN T21 [get_ports {gpio_uart_rd}]
 # GPIO0 B14_L9_N
 #set_property PACKAGE_PIN Y22 [get_ports {gpio_n[5]}]
 # GPIO0 B14_L4_N
-set_property PACKAGE_PIN U21 [get_ports {gpio_uart_td }]
+##set_property PACKAGE_PIN U21 [get_ports {gpio_uart_td }]
 # GPIO0 B16_L14_P
 #set_property PACKAGE_PIN E13 [get_ports {gpio_n[7]}]
 
@@ -102,9 +102,9 @@ set_property PACKAGE_PIN L13 [get_ports {fpga_i2c_scl}]
 set_property PACKAGE_PIN M13 [get_ports {fpga_i2c_sda}]
 false_path {fpga_i2c_*} eth_refclk
 
-set_property IOSTANDARD LVCMOS25 [get_ports {rstb_i2c}]
+# set_property IOSTANDARD LVCMOS25 [get_ports {rstb_i2c}]
 # B15_L24_N, I2CSW_RST
-set_property PACKAGE_PIN M16 [get_ports {rstb_i2c}]
+# set_property PACKAGE_PIN M16 [get_ports {rstb_i2c}]
 
 proc false_path {patt clk} {
     set p [get_ports -quiet $patt -filter {direction != out}]
