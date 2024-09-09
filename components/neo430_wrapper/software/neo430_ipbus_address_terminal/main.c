@@ -52,7 +52,7 @@ bool useRARP;
 int setMacIP(void){
   
     // configure i2c switch
-  config_i2c_switch(I2C_MUX_CHAN_3);
+  // config_i2c_switch(I2C_MUX_CHAN_3);
   
   // set IPBus reset
   neo430_wishbone_writeIPBusReset(true);
@@ -99,7 +99,7 @@ int main(void) {
   //  USI_CT = (1<<USI_CT_EN);
  
   neo430_uart_br_print( "\n----------------------------------------\n"
-                          "- IPBus Address Control Terminal v0.20 -\n"
+                          "- IPBus Address Control Terminal v0.21 -\n"
                           "----------------------------------------\n\n");
 
   // check if WB unit was synthesized, exit if no WB is available
@@ -132,8 +132,8 @@ int main(void) {
     selection = 0;
     if (!strcmp(command, "help"))
     	selection = 1;
-    if (!strcmp(command, "config"))
-    	selection = 2;
+    //    if (!strcmp(command, "config"))
+    //	selection = 2;
     if (!strcmp(command, "id"))
     	selection = 3;
 #if FORCE_RARP == 0
@@ -159,7 +159,7 @@ int main(void) {
     case 1: // print help menu
         neo430_uart_br_print("Available commands:\n"
                       " help     - show this text\n"
-                      " config    - sets SFP I2C switch channel\n"
+		      //" config    - sets SFP I2C switch channel\n"
                       " id       - read Unique ID\n"
 #if FORCE_RARP == 0
                       " write    - write IP addr to PROM\n"
@@ -207,26 +207,26 @@ int main(void) {
         break;
 
     case 3: // read from Unique ID address
-        config_i2c_switch(I2C_MUX_CHAN_3);
+        // config_i2c_switch(I2C_MUX_CHAN_3);
         uid = read_UID();
         print_MAC_address(uid);
         break;
 
 #if FORCE_RARP == 0
     case 4: // write to PROM
-        config_i2c_switch(I2C_MUX_CHAN_3);
+        // config_i2c_switch(I2C_MUX_CHAN_3);
         write_Prom();
         break;
 
     case 5: // read from PROM
-        config_i2c_switch(I2C_MUX_CHAN_3);
+        // config_i2c_switch(I2C_MUX_CHAN_3);
         ipAddr = read_Prom();
         print_IP_address(ipAddr);
         break;
 #endif
 
     case 6: // write General Purpose Output value to PROM
-        config_i2c_switch(I2C_MUX_CHAN_3);
+        // config_i2c_switch(I2C_MUX_CHAN_3);
         write_PromGPO();
 
     //case 7: // read GPO value from PROM
@@ -237,7 +237,7 @@ int main(void) {
     //    setMacIP();
     //    break;
     case 7:  // dump entire contents of PROM
-        config_i2c_switch(I2C_MUX_CHAN_3);
+        // config_i2c_switch(I2C_MUX_CHAN_3);
         dump_Prom();
 
     case 9: // restart
