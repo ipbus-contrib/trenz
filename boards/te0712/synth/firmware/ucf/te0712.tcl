@@ -165,3 +165,8 @@ proc false_path {patt clk} {
 	    set_false_path -to [get_ports $patt -filter {direction != in}]
 	}
 }
+
+# TODO remove when upgrading IPBus, fixed in new versions of IPBus:
+# https://github.com/ipbus/ipbus-firmware/blob/master/components/ipbus_transport_udp/firmware/hdl/udp_clock_crossing_if.vhd#L77
+
+set_property ASYNC_REG TRUE [ get_cells {infra/ipbus/udp_if/clock_crossing_if/*_buf_reg*} ]
