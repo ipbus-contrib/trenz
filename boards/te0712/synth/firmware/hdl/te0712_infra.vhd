@@ -228,7 +228,13 @@ begin
 
     -- If we are using the NEO430 soft core, get the MAC,IP addresses from there
     -- Otherwise use the input ports.
+    
+    -- Hard wire for tests....
     s_mac_addr <= s_neo430_mac_addr when USE_NEO430 else mac_addr;
     s_ip_addr  <= s_neo430_ip_addr  when USE_NEO430 else ip_addr;
     RARP_select <= '1' when (neo430_RARP_select='1' or FORCE_RARP) else '0';
+    --s_mac_addr <= mac_addr;
+    --s_ip_addr  <= ip_addr;
+    --RARP_select <= '0';
+    
 end rtl;
