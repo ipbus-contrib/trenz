@@ -2,9 +2,9 @@
 set_property CONFIG_VOLTAGE 3.3 [current_design]
 set_property CFGBVS VCCO [current_design]
 
-set_property BITSTREAM.Config.SPI_BUSWIDTH 4 [current_design]
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
-
+set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
+set_property BITSTREAM.CONFIG.CONFIGRATE 33 [current_design]
 
 # Ethernet monitor clock hack (62.5MHz)
 create_clock -period 16.000 -name clk_dc [get_pins infra/eth/dc_buf/O]
