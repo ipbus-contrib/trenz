@@ -24,17 +24,26 @@ neo430_uart_br_print("\nChecking ACK\n");
   bool inprogress = true;
   bool ack = false;
   uint8_t cmd_stat = 0;
-  while (inprogress) {
+  uint8_t ack_timeout = ACK_TIMEOUT;
+  while (inprogress && (ack_timeout !=0) ) {
     delay(delayVal);
     cmd_stat = neo430_wishbone32_read8(ADDR_CMD_STAT);
     inprogress = (cmd_stat & INPROGRESS) > 0;
     ack = (cmd_stat & RECVDACK) == 0;
-
+    ack_timeout--;
+    
 #if DEBUG > 0
+    neo430_uart_br_print("\n ack = ");
     neo430_uart_print_hex_byte( (uint8_t)ack );
+    neo430_uart_br_print("\n cmd_stat = ");
+    neo430_uart_print_hex_byte( cmd_stat );
 #endif
-
   }
+
+  if (ack_timeout ==0) {
+    neo430_uart_br_print("\nWARNING: No I2C ACK\n");
+  }
+  
   return ack;
 }
 

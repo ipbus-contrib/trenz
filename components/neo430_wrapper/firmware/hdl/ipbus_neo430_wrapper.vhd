@@ -49,8 +49,8 @@ architecture rtl of ipbus_neo430_wrapper is
   signal s_i2c_addr : std_logic_vector(2 downto 0); -- need 3 bits for I2C master.
   signal s_ipmac_ni2c_flag : std_logic; -- high if addressing MAC/IP output. Low for I2C
   
-  --attribute mark_debug : string; 
-  --attribute mark_debug of  wb_adr_o_int , wb_dat_i_int , wb_dat_o_int , wb_stb_o_int , wb_ack_i_int , s_i2c_ack , s_mac_addr_ack , s_i2c_addr , s_ipmac_ni2c_flag : signal is "true";
+  attribute mark_debug : string; 
+  attribute mark_debug of  wb_adr_o_int , wb_dat_i_int , wb_dat_o_int , wb_stb_o_int , wb_ack_i_int , s_i2c_ack , s_mac_addr_ack , s_i2c_addr , s_ipmac_ni2c_flag , scl_o , sda_o : signal is "true";
 
 begin  -- architecture rtl
 
@@ -70,7 +70,7 @@ begin  -- architecture rtl
       WB32_USE    => true,              -- implement WB32 unit? (default=true)
       WDT_USE     => false,             -- implement WDT? (default=true)
       GPIO_USE    => true,              -- implement GPIO unit? (default=true)
-      TIMER_USE   => false,             -- implement timer? (default=true)
+      TIMER_USE   => true,             -- implement timer? (default=true)
       UART_USE    => true,              -- implement USART? (default=true)
       TWI_USE     => false,  -- implement two wire serial interface? (default=true)
       CRC_USE     => false,             -- implement CRC unit? (default=true)
