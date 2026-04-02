@@ -46,6 +46,8 @@ void print_GPO( uint16_t gpo);
 // #define DEBUG 1
 #define DELAYVAL 512
 
+#define ACK_TIMEOUT 50
+
 #ifndef MAX_CMD_LENGTH
 #define MAX_CMD_LENGTH 16
 #endif
